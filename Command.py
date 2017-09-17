@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import discord
+
 from db.Models import *
 
 session_start = datetime.now()
@@ -36,7 +37,7 @@ class Command:
     def command_type(self, value):
         self._command_type = value
 
-    def call(self, client, message):
+    def call(self, client, message, params):
         pass
 
 
@@ -47,7 +48,7 @@ class StatusCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message):
+    def call(self, client, message, params):
         user = Relation.get_or_create(
             userid=str(message.author.id),
             defaults={'relation_value': 0})
@@ -64,7 +65,7 @@ class LoveCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message):
+    def call(self, client, message, params):
         return [client.send_message(message.channel, "I love you too, " + message.author.display_name + " :heart:")]
 
 
@@ -76,12 +77,36 @@ class PetCommand(Command):
         self._type = _type
         self._relation_mod = 5
 
-    def call(self, client, message):
+    def call(self, client, message, params):
         q = Relation.update(relation_value=Relation.relation_value + self._relation_mod).where(
             Relation.userid == message.author.id)
         q.execute()
         return [client.send_message(message.channel,
                                     "*Avi licks " + message.author.display_name + "'s hand and jumps around happily* :heart:")]
+
+
+class OldPeopleCommand(Command):
+    def __init__(self, command, permission, _type):
+        super(OldPeopleCommand, self).__init__(command, permission, _type)
+        self._command = command
+        self._permission = permission
+        self._type = _type
+
+    def call(self, client, message, params):
+        counter = Counter.get_or_create(
+            name='oldpeople',
+            defaults={'counter_value': 0})
+
+        output = "Number of times people have complained about being too old: " \
+                 + str(counter[0].counter_value)
+
+        if counter[0].counter_value > 0:
+            output += " \n Last old person: " \
+                      + "**" + counter[0].author + "**" \
+                      + "\n*" \
+                      + "\"" + counter[0].last_quote + "\"*"
+
+        return [client.Clientuser.send_message(message.channel, output)]
 
 
 class ShooCommand(Command):
@@ -92,7 +117,7 @@ class ShooCommand(Command):
         self._type = _type
         self._relation_mod = -5
 
-    def call(self, client, message):
+    def call(self, client, message, params):
         q = Relation.update(relation_value=Relation.relation_value + self._relation_mod).where(
             Relation.userid == message.author.id)
         q.execute()
@@ -107,7 +132,7 @@ class PraiseCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message):
+    def call(self, client, message, params):
         return [client.send_message(message.channel, "You're the most beautiful being the world has ever seen, "
                                     + message.author.display_name + " <:vohiyo:335128884460781580>")]
 
@@ -119,7 +144,7 @@ class LogoutCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message):
+    def call(self, client, message, params):
         return [client.send_message(message.channel, "Gotta go! Byyyyee :vohiyo:"), client.logout()]
 
 
@@ -130,12 +155,22 @@ class UptimeCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message):
-        upt = datetime.now() - session_start
-        mins, secs = divmod(upt.seconds, 60)
-        hours, mins = divmod(mins, 60)
-        res = "Running for: "'%02d:%02d:%02d' % (hours, mins, secs)
-        return [client.send_message(message.channel, res)]
+# takes a message id as argument
+
+class FetchPostCommand(Command):
+    def __init__(self, command, permission, _type):
+        super(FetchPostCommand, self).__init__(command, permission, _type)
+        self._command = command
+        self._permission = permission
+        self._type = _type
+
+    def call(self, client, message, params):
+        for _channel in message.server.channels:
+            channelid = _channel.id
+                #client.get_message(channel.id, 358924330664722432).content
+            return [client.get_message(_channel, '358924330664722432')]
+
+        return [client.send_message(message.channel, "not found")]
 
 
 class HelpCommand(Command):
@@ -145,7 +180,7 @@ class HelpCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message):
+    def call(self, client, message, params):
         em = discord.Embed(title='',
                            description='                  ', colour=0xe91e63)
         em.add_field(name='!help', value="Show this message", inline=False)

@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from Command import *
 
 
@@ -7,6 +5,17 @@ class CommandController:
     commands = []
 
     def __init__(self):
+        # self.commandlist = {'!status': [0, 'message', StatusCommand, []],
+        #                     '!love': [0, 'message', LoveCommand, []],
+        #                     '!logout': [1, 'message', LogoutCommand, []],
+        #                     '!praise': [0, 'message', PraiseCommand, []],
+        #                     '!uptime': [0, 'message', UptimeCommand, []],
+        #                     '!help': [0, 'message', HelpCommand, []],
+        #                     '!pet': [0, 'message', PetCommand, []],
+        #                     '!shoo': [0, 'message', ShooCommand, []],
+        #                     '!oldpeople': [0, 'message', OldPeopleCommand, []],
+        #                     '!fetchPost': [0, 'message', FetchPostCommand, []],
+        #                     }
         self.commandlist = {'!status': [0, 'message', StatusCommand],
                             '!love': [0, 'message', LoveCommand],
                             '!logout': [1, 'message', LogoutCommand],
@@ -15,7 +24,8 @@ class CommandController:
                             '!help': [0, 'message', HelpCommand],
                             '!pet': [0, 'message', PetCommand],
                             '!shoo': [0, 'message', ShooCommand],
-
+                            '!oldpeople': [0, 'message', OldPeopleCommand],
+                            '!fetchPost': [0, 'message', FetchPostCommand],
                             }
 
         self.rolelist = {'Owner': 1,
@@ -51,15 +61,19 @@ class CommandController:
 
     def call(self, client, message):
         for _cmd in self.commands:
-            if _cmd.command == message.content:
-                return _cmd.call(client, message)
+            params = message.content.split(" ")
+            if _cmd.command == params[0]:
+                params.pop(0)
+                print (params)
+                return _cmd.call(client, message, params)
 
     def validate(self, client, message):
         for _cmd in self.commands:
             #  print(str(_cmd.command) + " " + str(_cmd.permission) + " / " + str(
             # self.rolelist.get(str(message.author.top_role), 0)) + str(message.content) + " :: " + str(
             # message.content == _cmd.command)
-            if _cmd.command == message.content and _cmd.permission <= self.rolelist.get(str(message.author.top_role),
+            params = message.content.split(" ")
+            if _cmd.command == params[0] and _cmd.permission <= self.rolelist.get(str(message.author.top_role),
                                                                                         0):
                 # print("True")
                 return True
