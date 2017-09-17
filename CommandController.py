@@ -5,17 +5,7 @@ class CommandController:
     commands = []
 
     def __init__(self):
-        # self.commandlist = {'!status': [0, 'message', StatusCommand, []],
-        #                     '!love': [0, 'message', LoveCommand, []],
-        #                     '!logout': [1, 'message', LogoutCommand, []],
-        #                     '!praise': [0, 'message', PraiseCommand, []],
-        #                     '!uptime': [0, 'message', UptimeCommand, []],
-        #                     '!help': [0, 'message', HelpCommand, []],
-        #                     '!pet': [0, 'message', PetCommand, []],
-        #                     '!shoo': [0, 'message', ShooCommand, []],
-        #                     '!oldpeople': [0, 'message', OldPeopleCommand, []],
-        #                     '!fetchPost': [0, 'message', FetchPostCommand, []],
-        #                     }
+
         self.commandlist = {'!status': [0, 'message', StatusCommand],
                             '!love': [0, 'message', LoveCommand],
                             '!logout': [1, 'message', LogoutCommand],

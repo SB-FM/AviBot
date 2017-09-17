@@ -1,8 +1,11 @@
+import asyncio
 from datetime import datetime
 
 import discord
 
 from db.Models import *
+
+
 
 session_start = datetime.now()
 
@@ -37,7 +40,7 @@ class Command:
     def command_type(self, value):
         self._command_type = value
 
-    def call(self, client, message, params):
+    async def call(self, client, message, params):
         pass
 
 
@@ -48,14 +51,14 @@ class StatusCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message, params):
+    async def call(self, client, message, params):
         user = Relation.get_or_create(
             userid=str(message.author.id),
             defaults={'relation_value': 0})
 
-        return [client.send_message(message.channel,
-                                    " PLACEHOLDER AVI_RELATION for USER: >" + message.author.display_name + "< : " + str(
-                                        user[0].relation_value))]
+        await message.channel.send(
+            " PLACEHOLDER AVI_RELATION for USER: >" + message.author.display_name + "< : " + str(
+                user[0].relation_value))
 
 
 class LoveCommand(Command):
@@ -65,8 +68,8 @@ class LoveCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message, params):
-        return [client.send_message(message.channel, "I love you too, " + message.author.display_name + " :heart:")]
+    async def call(self, client, message, params):
+        await message.channel.send("I love you too, " + message.author.display_name + " :heart:")
 
 
 class PetCommand(Command):
@@ -77,12 +80,12 @@ class PetCommand(Command):
         self._type = _type
         self._relation_mod = 5
 
-    def call(self, client, message, params):
+    async def call(self, client, message, params):
         q = Relation.update(relation_value=Relation.relation_value + self._relation_mod).where(
             Relation.userid == message.author.id)
         q.execute()
-        return [client.send_message(message.channel,
-                                    "*Avi licks " + message.author.display_name + "'s hand and jumps around happily* :heart:")]
+        await message.channel.send(
+            "*Avi licks " + message.author.display_name + "'s hand and jumps around happily* :heart:")
 
 
 class OldPeopleCommand(Command):
@@ -92,7 +95,7 @@ class OldPeopleCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message, params):
+    async def call(self, client, message, params):
         counter = Counter.get_or_create(
             name='oldpeople',
             defaults={'counter_value': 0})
@@ -106,7 +109,7 @@ class OldPeopleCommand(Command):
                       + "\n*" \
                       + "\"" + counter[0].last_quote + "\"*"
 
-        return [client.Clientuser.send_message(message.channel, output)]
+        await message.channel.send(output)
 
 
 class ShooCommand(Command):
@@ -117,12 +120,13 @@ class ShooCommand(Command):
         self._type = _type
         self._relation_mod = -5
 
-    def call(self, client, message, params):
+    async def call(self, client, message, params):
         q = Relation.update(relation_value=Relation.relation_value + self._relation_mod).where(
             Relation.userid == message.author.id)
         q.execute()
-        return [client.send_message(message.channel, "*" +
-                                    message.author.display_name + " shoos Avi away and she sadly toddles into a quiet corner.*")]
+        await message.channel.send("*"
+                                   + message.author.display_name +
+                                   " shoos Avi away and she sadly toddles into a quiet corner.*")
 
 
 class PraiseCommand(Command):
@@ -132,9 +136,9 @@ class PraiseCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message, params):
-        return [client.send_message(message.channel, "You're the most beautiful being the world has ever seen, "
-                                    + message.author.display_name + " <:vohiyo:335128884460781580>")]
+    async def call(self, client, message, params):
+        await message.channel.send("You're the most beautiful being the world has ever seen, "
+                                     + message.author.display_name + " <:vohiyo:335128884460781580>")
 
 
 class LogoutCommand(Command):
@@ -144,8 +148,9 @@ class LogoutCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message, params):
-        return [client.send_message(message.channel, "Gotta go! Byyyyee :vohiyo:"), client.logout()]
+    async def call(self, client, message, params):
+        await message.channel.send("Gotta go! Byyyyee :vohiyo:")
+        await client.logout()
 
 
 class UptimeCommand(Command):
@@ -154,6 +159,7 @@ class UptimeCommand(Command):
         self._command = command
         self._permission = permission
         self._type = _type
+
 
 # takes a message id as argument
 
@@ -164,13 +170,11 @@ class FetchPostCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message, params):
-        for _channel in message.server.channels:
-            channelid = _channel.id
-                #client.get_message(channel.id, 358924330664722432).content
-            return [client.get_message(_channel, '358924330664722432')]
-
-        return [client.send_message(message.channel, "not found")]
+    async def call(self, client, message, params):
+        mess = await (message.channel.get_message(358957067668553729))
+        print(mess)
+        # return [client.get_message(_channel, '358924330664722432')]
+        await message.channel.send(mess)
 
 
 class HelpCommand(Command):
@@ -180,7 +184,7 @@ class HelpCommand(Command):
         self._permission = permission
         self._type = _type
 
-    def call(self, client, message, params):
+    async def call(self, client, message, params):
         em = discord.Embed(title='',
                            description='                  ', colour=0xe91e63)
         em.add_field(name='!help', value="Show this message", inline=False)
@@ -192,4 +196,4 @@ class HelpCommand(Command):
         em.add_field(name='!status', value="Display your status with Avi", inline=False)
         em.add_field(name='!uptime', value="Display the bot running time", inline=False)
         em.set_author(name='Avi Command Help', icon_url=client.user.avatar_url)
-        return [client.send_message(message.channel, embed=em)]
+        await message.channel.send(embed=em)
