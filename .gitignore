@@ -10,7 +10,7 @@ __pycache__/
 # db
 db/AviDB.db
 
-config/*
+config/config.py
 
 # Distribution / packaging
 .Python
