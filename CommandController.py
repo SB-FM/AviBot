@@ -15,7 +15,9 @@ class CommandController:
                             '!pet': [0, 'message', PetCommand],
                             '!shoo': [0, 'message', ShooCommand],
                             '!oldpeople': [0, 'message', OldPeopleCommand],
-                            '!fetchPost': [0, 'message', FetchPostCommand],
+                            '!fetchPost': [1, 'message', FetchPostCommand],
+                            '!play': [0, 'message', PlayCommand],
+                            '!pupp': [2, 'message', PuppeteerCommand],
                             }
 
         self.rolelist = {'Owner': 1,
@@ -63,8 +65,8 @@ class CommandController:
             # self.rolelist.get(str(message.author.top_role), 0)) + str(message.content) + " :: " + str(
             # message.content == _cmd.command)
             params = message.content.split(" ")
-            if _cmd.command == params[0] and _cmd.permission <= self.rolelist.get(str(message.author.top_role),
-                                                                                        0):
+            if _cmd.command == params[0] and (_cmd.permission <= self.rolelist.get(str(message.author.top_role),
+                                                                                        0) or message.author.id ==318602871912398859):
                 # print("True")
                 return True
 
