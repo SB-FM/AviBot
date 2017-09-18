@@ -1,11 +1,10 @@
 import datetime
+import re
 
 import discord
 
 import CommandController
 from db.Models import *
-import re
-from config import *
 
 cc = CommandController.CommandController()
 
@@ -50,7 +49,7 @@ class Avibot(discord.Client):
             await message.add_reaction(u"\U0001F4A4")
         elif 'lizard' in text:
             await message.add_reaction(u"\U0001F98E")
-        elif re.search(r"\bavi\b", text) :
+        elif re.search(r"\bavi\b", text):
             await message.add_reaction(u"\U0001F43A")
 
     def log_to_console(self, message):
@@ -78,10 +77,11 @@ class Avibot(discord.Client):
         if before.id == 155739141802295297 and after.id == 155739141802295297:
             if after.game is not None and after.game.type == 1 and after.guild.id == 164072311161356289:
                 print("STREAM START TRIGGERED")
-                #print(after.name + " " + after.game.name + str(after.game.type) + "" + str(after.guild.name))
+                # print(after.name + " " + after.game.name + str(after.game.type) + "" + str(after.guild.name))
                 # await client.get_channel(337585332281409537).send(
-                  #  '*Avi is very excited that the commander just started streaming*')
-                await client.get_channel(164072311161356289).send('*Avi is wagging her tail as the commander starts streaming*')
+                #  '*Avi is very excited that the commander just started streaming*')
+                await client.get_channel(164072311161356289).send(
+                    '*Avi is wagging her tail as the commander starts streaming*')
 
     async def on_message(self, message):
         if not message.author.bot:
