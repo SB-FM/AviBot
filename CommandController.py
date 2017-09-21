@@ -45,6 +45,7 @@ class CommandController:
     def get_session_start(self):
         return self.session_start
 
+    # populate command list
     def gen(self):
         for cmd in self.commandlist:
             item = self.commandlist.get(cmd)
@@ -52,25 +53,19 @@ class CommandController:
             obj = func(cmd, item[0], item[1], item[3], item[4])
             self.commands.append(obj)
 
+    # execute command
     def call(self, client, message):
         for _cmd in self.commands:
             params = message.content.split(" ")
             if _cmd.command == params[0]:
                 params.pop(0)
-                print (params)
+                print(params)
                 return _cmd.check(client, message, params)
 
+    # check command privileges
     def validate(self, client, message):
         for _cmd in self.commands:
-            #  print(str(_cmd.command) + " " + str(_cmd.permission) + " / " + str(
-            # self.rolelist.get(str(message.author.top_role), 0)) + str(message.content) + " :: " + str(
-            # message.content == _cmd.command)
             params = message.content.split(" ")
-            if _cmd.command == params[0] and (_cmd.permission <= self.rolelist.get(str(message.author.top_role),
-                                                                                        0) or message.author.id ==318602871912398859):
-                # print("True")
-                return True
-
-        # print("false")
-
-        return False
+            return (_cmd.command == params[0]
+                    and (_cmd.permission <= self.rolelist.get(str(message.author.top_role), 0)
+                         or message.author.id == 318602871912398859))
