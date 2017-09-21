@@ -41,7 +41,10 @@ class Avibot(discord.Client):
     async def check_reaction_triggers(self, message):
 
         text = message.content.lower()
-        if 'sunglasses' in text:
+
+        if 'meatup' in text or 'meat-up' in text:
+            await message.add_reaction(u"\U0001F356")
+        elif 'sunglasses' in text:
             await message.add_reaction(u"\U0001F60E")
         elif 'approve' in text:
             await message.add_reaction(self.fetch_emojis('MattApproves'))
@@ -51,6 +54,8 @@ class Avibot(discord.Client):
             await message.add_reaction(u"\U0001F98E")
         elif re.search(r"\bavi\b", text):
             await message.add_reaction(u"\U0001F43A")
+        elif re.search(r"\bo7\b", text):
+            await message.add_reaction(":o7:330168582723862528")
 
     def log_to_console(self, message):
         print("--------------")
