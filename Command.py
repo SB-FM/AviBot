@@ -21,7 +21,7 @@ class RelationLevel(enum.Enum):
     @staticmethod
     def check(value, req):
         if value >= req.value[0]:
-            return value
+            return True
 
     @staticmethod
     def find(value):

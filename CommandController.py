@@ -64,8 +64,11 @@ class CommandController:
 
     # check command privileges
     def validate(self, client, message):
+        params = message.content.split(" ")
+
         for _cmd in self.commands:
-            params = message.content.split(" ")
-            return (_cmd.command == params[0]
-                    and (_cmd.permission <= self.rolelist.get(str(message.author.top_role), 0)
-                         or message.author.id == 318602871912398859))
+            if _cmd.command == params[0] and (_cmd.permission <= self.rolelist.get(str(message.author.top_role),
+                                                                                   0) or message.author.id == 318602871912398859):
+                return True
+
+        return False

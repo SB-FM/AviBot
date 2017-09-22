@@ -62,6 +62,9 @@ class Avibot(discord.Client):
         print(str(datetime.datetime.now().strftime("%H:%M:%S"))
               + "  |   "
               + message.author.display_name
+              + " ("
+              + str(message.author.id)
+              + " )"
               + ": "
               + " "
               + message.content)
@@ -97,6 +100,7 @@ class Avibot(discord.Client):
                     self.log_to_console(message)
                     self.check_user(message)
                     await cc.call(client, message)
+                    await message.delete()
             else:
                 # custom triggers
                 self.check_old(message)
